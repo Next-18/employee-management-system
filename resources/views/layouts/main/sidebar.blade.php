@@ -12,8 +12,8 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Dashboard -->
-    <li class="nav-item active">
-        <a class="nav-link" href="{{ route('home') }}">
+    <li class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('home') }}" aria-current="{{ request()->routeIs('home') ? 'page' : '' }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
@@ -23,91 +23,66 @@
     <hr class="sidebar-divider">
 
     <!-- Employee Management Section -->
+    @if(auth()->user()->role === 'admin')
     <div class="sidebar-heading">
         Employee Management
     </div>
 
-    <li class="nav-item">
+    <li class="nav-item {{ request()->routeIs('employee.*') ? 'active' : '' }}">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#employeeMenu" aria-expanded="false" aria-controls="employeeMenu">
             <i class="fas fa-fw fa-users"></i>
             <span>Employees</span>
         </a>
-        <div id="employeeMenu" class="collapse" data-parent="#accordionSidebar">
+        <div id="employeeMenu" class="collapse {{ request()->routeIs('employee.*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded shadow-sm">
                 <h6 class="collapse-header text-primary font-weight-bold">Employee Actions:</h6>
-                <a class="collapse-item" href="{{ route('employee.add') }}">
+                <a class="collapse-item {{ request()->routeIs('employee.add') ? 'active' : '' }}" href="{{ route('employee.add') }}">
                     <i class="fas fa-user-plus text-primary mr-2"></i> Add Employees
                 </a>
-                <a class="collapse-item" href="{{ route('employee.master') }}">
+                <a class="collapse-item {{ request()->routeIs('employee.master') ? 'active' : '' }}" href="{{ route('employee.master') }}">
                     <i class="fas fa-list text-primary mr-2"></i> Master List
                 </a>
             </div>
         </div>
     </li>
+    @endif
 
-    <!-- Utilities Section -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#utilitiesMenu" aria-expanded="false" aria-controls="utilitiesMenu">
-            <i class="fas fa-fw fa-tools"></i>
-            <span>Utilities</span>
-        </a>
-        <div id="utilitiesMenu" class="collapse" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="utilities-color.html">Colors</a>
-                <a class="collapse-item" href="utilities-border.html">Borders</a>
-                <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                <a class="collapse-item" href="utilities-other.html">Other</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider">
-
-    <!-- Addons Section -->
-    <div class="sidebar-heading">
-        Addons
-    </div>
-
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesMenu" aria-expanded="false" aria-controls="pagesMenu">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Pages</span>
-        </a>
-        <div id="pagesMenu" class="collapse" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="login.html">Login</a>
-                <a class="collapse-item" href="register.html">Register</a>
-                <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                <div class="collapse-divider"></div>
-                <a class="collapse-item" href="404.html">404 Page</a>
-                <a class="collapse-item" href="blank.html">Blank Page</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- Charts Section -->
-    <li class="nav-item">
-        <a class="nav-link" href="charts.html">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Charts</span>
+    <!-- Attendance Section -->
+    <li class="nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('attendance.index') }}" aria-current="{{ request()->routeIs('attendance.*') ? 'page' : '' }}">
+            <i class="fas fa-calendar-check"></i>
+            <span>Attendance</span>
         </a>
     </li>
 
-    <!-- Tables Section -->
-    <li class="nav-item">
-        <a class="nav-link" href="tables.html">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span>
+    <!-- Leave Management Section -->
+    <li class="nav-item {{ request()->routeIs('leave.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('leave.index') }}" aria-current="{{ request()->routeIs('leave.*') ? 'page' : '' }}">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Leave Management</span>
         </a>
     </li>
 
-    <!-- Divider -->
-    <hr class="sidebar-divider d-none d-md-block">
+    <!-- Employee-only Quick Links -->
+    @if(auth()->user()->role === 'employee')
+    <li class="nav-item {{ request()->routeIs('attendance.create') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('attendance.create') }}" aria-current="{{ request()->routeIs('attendance.create') ? 'page' : '' }}">
+            <i class="fas fa-user-check"></i>
+            <span>Mark Attendance</span>
+        </a>
+    </li>
+    <li class="nav-item {{ request()->routeIs('leave.create') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('leave.create') }}" aria-current="{{ request()->routeIs('leave.create') ? 'page' : '' }}">
+            <i class="fas fa-calendar-plus"></i>
+            <span>Request Leave</span>
+        </a>
+    </li>
+    @endif
 
-    <!-- Sidebar Toggler -->
-    <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-    </div>
+ 
+
+   
+   
+ 
 
 </ul>

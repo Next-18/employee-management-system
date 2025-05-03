@@ -15,10 +15,8 @@
         @if(session('message'))
             <div class="alert alert-{{ session('alert-type', 'success') }} alert-dismissible fade show rounded-1 mb-4 border-0 shadow-sm" role="alert">
                 <div class="d-flex align-items-center">
-                  
                     <div>{{ session('message') }}</div>
                 </div>
-            
             </div>
         @endif
 
@@ -29,7 +27,6 @@
                     <i class="fas fa-exclamation-circle me-2 text-danger"></i>
                     <div>{{ session('error') }}</div>
                 </div>
-          
             </div>
         @endif
 
@@ -42,14 +39,15 @@
                             {{-- Table Header --}}
                             <thead class="bg-light text-muted">
                                 <tr>
-                                    <th class="ps-4 py-3 text-start fw-medium small text-uppercase" style="width: 5%; min-width: 50px">ID</th>
-                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 20%; min-width: 180px">Employee</th>
-                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 12%; min-width: 110px">Birthday</th>
-                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 12%; min-width: 110px">Phone</th>
-                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 20%; min-width: 180px">Address</th>
-                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 8%; min-width: 80px">Gender</th>
-                                    <th class="pe-4 py-3 text-end fw-medium small text-uppercase" style="width: 10%; min-width: 100px">Salary</th>
-                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 13%; min-width: 120px">Actions</th>
+                                    <th class="ps-4 py-3 text-start fw-medium small text-uppercase" style="width: 5%;">ID</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 8%;">Photo</th>
+                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 20%;">Employee</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 12%;">Birthday</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 12%;">Phone</th>
+                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 20%;">Address</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 8%;">Gender</th>
+                                    <th class="pe-4 py-3 text-end fw-medium small text-uppercase" style="width: 10%;">Salary</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 13%;">Actions</th>
                                 </tr>
                             </thead>
                             {{-- Table Body --}}
@@ -60,46 +58,48 @@
                                         <td class="ps-4 py-3 text-start small text-muted">
                                             {{ $employee->id }}
                                         </td>
-
+                                        {{-- Photo --}}
+                                        <td class="py-3 text-center">
+                                            <img src="{{ $employee->profile_picture ? asset('storage/' . $employee->profile_picture) : asset('images/default-avatar.png') }}" alt="Profile Picture" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #eee;">
+                                        </td>
                                         {{-- Full Name --}}
                                         <td class="py-3 text-start">
                                             <span class="fw-medium">
                                                 {{ implode(' ', array_filter([$employee->first_name, $employee->middle_name, $employee->last_name, $employee->suffix])) }}
-
                                             </span>
                                         </td>
 
                                         {{-- Birthday --}}
                                         <td class="py-3 text-center small text-muted">
-                                            {{ \Carbon\Carbon::parse($employee->Birthday)->format('d M Y') }}
+                                            {{ \Carbon\Carbon::parse($employee->birthday)->format('d M Y') }}
                                         </td>
 
                                         {{-- Phone --}}
                                         <td class="py-3 text-center small text-muted">
-                                            {{ $employee->PhoneNumber }}
+                                            {{ $employee->phone_number }}
                                         </td>
 
                                         {{-- Address --}}
                                         <td class="py-3 text-start small text-muted">
-                                            {{ $employee->Address }}
+                                            {{ $employee->address }}
                                         </td>
 
                                         {{-- Gender --}}
                                         <td class="py-3 text-center">
-                                            <span class="badge bg-{{ strtolower($employee->Gender) === 'male' ? 'primary' : 'warning' }}-subtle text-{{ strtolower($employee->Gender) === 'male' ? 'primary' : 'warning' }} rounded-pill px-3 py-1">
-                                                {{ ucfirst($employee->Gender) }}
+                                            <span class="badge bg-{{ strtolower($employee->gender) === 'male' ? 'primary' : 'warning' }}-subtle text-{{ strtolower($employee->gender) === 'male' ? 'primary' : 'warning' }} rounded-pill px-3 py-1">
+                                                {{ ucfirst($employee->gender) }}
                                             </span>
                                         </td>
 
                                         {{-- Salary --}}
                                         <td class="pe-4 py-3 text-end fw-medium small">
-                                            ${{ number_format($employee->Salary, 2) }}
+                                            ${{ number_format($employee->salary, 2) }}
                                         </td>
 
                                         {{-- Actions --}}
                                         <td class="py-3 text-center">
                                             <div class="d-flex justify-content-center align-items-center gap-2" style="min-height: 32px;">
-                                                {{-- Edit Button --}}
+                                                {{-- Edit --}}
                                                 <a href="{{ route('employee.edit', $employee->id) }}"
                                                    class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center action-btn shadow-sm"
                                                    style="width: 32px; height: 32px;"
@@ -109,7 +109,7 @@
                                                     <i class="fas fa-pencil-alt fa-xs"></i>
                                                 </a>
 
-                                                {{-- Restore/Delete Button --}}
+                                                {{-- Restore/Delete --}}
                                                 @if($employee->trashed())
                                                     <form action="{{ route('employee.restore', $employee->id) }}" method="POST" class="d-inline m-0">
                                                         @csrf

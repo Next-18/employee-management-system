@@ -1,17 +1,17 @@
-<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm">
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm px-3">
 
     <!-- Sidebar Toggle (Topbar) -->
-    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-        <i class="fa fa-bars"></i>
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3 p-0">
+        <i class="fas fa-bars"></i>
     </button>
 
     <!-- Topbar Search -->
     <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-        <div class="input-group shadow-sm">
-            <input type="text" class="form-control bg-light border-0 small rounded-pill px-4" placeholder="Search for..."
+        <div class="input-group">
+            <input type="text" class="form-control bg-light border-0 rounded-pill px-4 py-2" placeholder="Search..."
                 aria-label="Search" aria-describedby="search-button">
             <div class="input-group-append">
-                <button class="btn btn-primary rounded-pill ml-2 px-3" type="button" id="search-button">
+                <button class="btn btn-outline-secondary rounded-pill ml-2 px-3" type="button" id="search-button">
                     <i class="fas fa-search fa-sm"></i>
                 </button>
             </div>
@@ -23,21 +23,14 @@
 
         <!-- Notification Icon -->
         <li class="nav-item dropdown no-arrow mx-2">
-            <a class="nav-link dropdown-toggle position-relative" href="#" id="alertsDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-bell fa-fw"></i>
-                <span class="badge badge-danger badge-counter animate__animated animate__bounceIn">3+</span>
+            <a class="nav-link dropdown-toggle position-relative" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bell fa-lg" style="transition: transform 0.3s ease; transform: scale(1.1);"></i>
+        
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow-lg animated--fade-in" aria-labelledby="alertsDropdown">
-                <h6 class="dropdown-header">Notifications</h6>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="icon-circle bg-primary text-white mr-3">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div>
-                        <div class="small text-gray-500">December 12, 2023</div>
-                        <span class="font-weight-bold">A new report is ready to download!</span>
-                    </div>
+                <h6 class="dropdown-header text-muted">Notifications</h6>
+                <a class="dropdown-item" href="#">
+                    A new report is ready to download!
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item text-center small text-primary" href="#">View all notifications</a>
@@ -46,21 +39,13 @@
 
         <!-- Messages Icon -->
         <li class="nav-item dropdown no-arrow mx-2">
-            <a class="nav-link dropdown-toggle position-relative" href="#" id="messagesDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-envelope fa-fw"></i>
-                <span class="badge badge-success badge-counter animate__animated animate__bounceIn">7</span>
+            <a class="nav-link dropdown-toggle position-relative" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-envelope fa-lg" style="transition: transform 0.3s ease; transform: scale(1.1);"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow-lg animated--fade-in" aria-labelledby="messagesDropdown">
-                <h6 class="dropdown-header">Messages</h6>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="dropdown-list-image mr-3">
-                        <img class="rounded-circle" src="img/undraw_profile_1.svg" alt="User" style="width:40px; height:40px;">
-                    </div>
-                    <div class="font-weight-bold">
-                        <div class="text-truncate">Hey! How are you doing?</div>
-                        <div class="small text-gray-500">Emily · 1h ago</div>
-                    </div>
+                <h6 class="dropdown-header text-muted">Messages</h6>
+                <a class="dropdown-item" href="#">
+                    Hey! How are you doing?
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item text-center small text-primary" href="#">View all messages</a>
@@ -71,8 +56,7 @@
 
         <!-- User Information -->
         <li class="nav-item dropdown no-arrow">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <img class="img-profile rounded-circle mr-2 shadow-sm" 
                      src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('img/undraw_profile.svg') }}" 
                      alt="Profile Picture" style="width: 36px; height: 36px;">

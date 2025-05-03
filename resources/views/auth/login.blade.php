@@ -66,9 +66,6 @@
                                     <div class="text-center">
                                         <a class="small text-primary text-decoration-none" href="{{ route('password.request') }}">Forgot Password?</a>
                                     </div>
-                                    <div class="text-center mt-2">
-                                        <a class="small text-primary text-decoration-none" href="{{ route('register') }}">Create an Account!</a>
-                                    </div>
                                 </div>
                             </div>
                         </div> <!-- row -->

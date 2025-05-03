@@ -12,5 +12,21 @@ class Employee extends Model
 
     protected $table = 'employees'; // Table name
 
-    protected $fillable = ['FirstName', 'MiddleName', 'LastName', 'Suffix', 'Birthday','PhoneNumber', 'Address', 'Gender', 'Salary']; 
+    protected $fillable = [
+        'first_name',
+        'middle_name',
+        'last_name',
+        'suffix',
+        'birthday',
+        'phone_number',
+        'address',
+        'gender',
+        'salary',
+        'profile_picture',
+    ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'employee_id');
+    }
 }

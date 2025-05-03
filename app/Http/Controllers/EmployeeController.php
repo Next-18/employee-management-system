@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Mail\EmployeeCredentialsMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
@@ -20,23 +25,69 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::info('Store method called.');
+        \Log::info('Request all:', $request->all());
+        \Log::info('Has file profile_picture:', [$request->hasFile('profile_picture')]);
+
         // Validate the request data
         $validated = $request->validate([
-            'FirstName' => ['required', 'min:1', 'max:255'],
-            'MiddleName' => ['nullable', 'max:255'],
-            'LastName' => ['required', 'min:1', 'max:255'],
-            'Suffix' => ['nullable', 'max:50'],
-            'Birthday' => ['required', 'date'],
-            'PhoneNumber' => ['required', 'unique:employees,PhoneNumber'],
-            'Address' => ['required', 'min:1', 'max:500'],
-            'Gender' => ['required', 'in:Male,Female,Other'],
-            'Salary' => ['required', 'numeric', 'min:0'],
+            'first_name'      => 'required|min:1|max:255',
+            'middle_name'     => 'nullable|max:255',
+            'last_name'       => 'required|min:1|max:255',
+            'suffix'          => 'nullable|max:50',
+            'birthday'        => 'required|date',
+            'phone_number'    => 'required|unique:employees,phone_number',
+            'address'         => 'required|min:1|max:500',
+            'gender'          => 'required|in:male,female,other',
+            'salary'          => 'required|numeric|min:0',
+            'email'           => 'required|email|unique:users,email',
+            'password'        => 'required|string|min:6',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        // Create the employee
-        Employee::create($validated);
+        \Log::info('Validation passed.');
 
-        return redirect()->route('employee.add')->with('message', "{$request->FirstName} {$request->LastName} successfully added!");
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            \Log::info('Profile picture file detected.');
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $validated['profile_picture'] = $path;
+            \Log::info('Profile picture stored at: ' . $path);
+        } else {
+            \Log::info('No profile picture file detected.');
+        }
+
+        // Create the employee
+        $employee = Employee::create([
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'last_name' => $validated['last_name'],
+            'suffix' => $validated['suffix'] ?? null,
+            'birthday' => $validated['birthday'],
+            'phone_number' => $validated['phone_number'],
+            'address' => $validated['address'],
+            'gender' => $validated['gender'],
+            'salary' => $validated['salary'],
+            'profile_picture' => $validated['profile_picture'] ?? null,
+        ]);
+
+        // Use provided password
+        $password = $validated['password'];
+        $user = User::create([
+            'name' => trim($validated['first_name'] . ' ' . ($validated['middle_name'] ?? '') . ' ' . $validated['last_name']),
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($password),
+            'role' => 'employee',
+            'employee_id' => $employee->id,
+        ]);
+
+        // Optionally, email the credentials to the employee
+        // \Mail::to($user->email)->send(new \App\Mail\EmployeeCredentialsMail($user->name, $user->email, $password));
+
+        return redirect()->route('employee.master')->with('message', 'Employee and user account created! Temporary password: <strong>' . $password . '</strong>');
     }
 
     /**
@@ -67,21 +118,34 @@ class EmployeeController extends Controller
 
         // Validate the request data
         $validated = $request->validate([
-            'FirstName' => ['required', 'min:1', 'max:255'],
-            'MiddleName' => ['nullable', 'max:255'],
-            'LastName' => ['required', 'min:1', 'max:255'],
-            'Suffix' => ['nullable', 'max:50'],
-            'Birthday' => ['required', 'date'],
-            'PhoneNumber' => ['required', 'unique:employees,PhoneNumber,' . $id],
-            'Address' => ['required', 'min:1', 'max:500'],
-            'Gender' => ['required', 'in:Male,Female,Other'],
-            'Salary' => ['required', 'numeric', 'min:0'],
+            'first_name' => ['required', 'min:1', 'max:255'],
+            'middle_name' => ['nullable', 'max:255'],
+            'last_name' => ['required', 'min:1', 'max:255'],
+            'suffix' => ['nullable', 'max:50'],
+            'birthday' => ['required', 'date'],
+            'phone_number' => ['required', 'unique:employees,phone_number,' . $id],
+            'address' => ['required', 'min:1', 'max:500'],
+            'gender' => ['required', 'in:male,female,other'],
+            'salary' => ['required', 'numeric', 'min:0'],
+            'email' => 'required|email',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        // Update the employee
+        // Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            // Delete old picture if exists
+            if ($employee->profile_picture) {
+                \Storage::disk('public')->delete($employee->profile_picture);
+            }
+            // Store new picture
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $validated['profile_picture'] = $path;
+        }
+
         $employee->update($validated);
 
-        return redirect()->route('employee.master')->with('message', "{$request->FirstName} {$request->LastName} successfully updated!");
+        return redirect()->route('employee.master')
+            ->with('message', 'Employee updated successfully!');
     }
 
     /**
@@ -95,7 +159,7 @@ class EmployeeController extends Controller
         $employee->delete();
 
         // Generate the full name
-        $fullName = trim("{$employee->FirstName} {$employee->LastName}");
+        $fullName = trim("{$employee->first_name} {$employee->last_name}");
 
         return redirect()->route('employee.master')->with([
             'message' => "{$fullName} has been deleted!",
@@ -114,7 +178,7 @@ class EmployeeController extends Controller
         $employee->restore();
 
         // Generate the full name
-        $fullName = trim("{$employee->FirstName} {$employee->LastName}");
+        $fullName = trim("{$employee->first_name} {$employee->last_name}");
 
         return redirect()->route('employee.master')->with('message', "{$fullName} has been restored!");
     }
@@ -132,10 +196,10 @@ class EmployeeController extends Controller
 
         // Fetch employees matching the query, ordered by LastName
         $employees = Employee::withTrashed()
-            ->where('FirstName', 'LIKE', "%{$query}%")
-            ->orWhere('LastName', 'LIKE', "%{$query}%")
-            ->orWhere('PhoneNumber', 'LIKE', "%{$query}%")
-            ->orderBy('LastName', 'asc')
+            ->where('first_name', 'LIKE', "%{$query}%")
+            ->orWhere('last_name', 'LIKE', "%{$query}%")
+            ->orWhere('phone_number', 'LIKE', "%{$query}%")
+            ->orderBy('last_name', 'asc')
             ->paginate(10);  // Paginate the results
 
         return response()->json($employees);

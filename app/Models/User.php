@@ -17,6 +17,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'name',
         'first_name',
         'middle_name', // Added for full name
         'last_name',
@@ -26,6 +27,8 @@ class User extends Authenticatable
         'gender',
         'custom_gender', // Custom gender, optional
         'profile_picture', // Profile picture
+        'role',
+        'employee_id',
     ];
 
     /**
@@ -55,5 +58,10 @@ class User extends Authenticatable
     public function getFullNameAttribute()
     {
         return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
     }
 }

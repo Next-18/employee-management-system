@@ -1,17 +1,89 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="container py-7" style="background: linear-gradient(to bottom, #f7f8fa, #eef2f5); min-height: 100vh;">
-
-    <!-- Heading -->
-    <header class="text-center mb-8">
-        <h2 class="display-5 fw-medium" style="color: #2c2c54; font-family: 'Lora', serif;">Edit Profile</h2>
-        <p class="text-muted" style="font-size: 1.15rem; font-family: 'Raleway', sans-serif;">Update your account information below.</p>
-    </header>
+<style>
+    body {
+        background: linear-gradient(135deg, #f7f8fa 0%, #e3e9f0 100%);
+    }
+    .profile-header {
+        background: linear-gradient(90deg, #2c2c54 60%, #4e54c8 100%);
+        color: #fff;
+        border-radius: 18px 18px 0 0;
+        padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+        text-align: center;
+        margin-bottom: -60px;
+        box-shadow: 0 4px 24px rgba(44,44,84,0.08);
+        position: relative;
+    }
+    .profile-avatar {
+        width: 130px;
+        height: 130px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid #fff;
+        box-shadow: 0 4px 24px rgba(44,44,84,0.12);
+        margin-top: -65px;
+        background: #fff;
+    }
+    .profile-edit-btn {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.4rem 1.2rem;
+        font-size: 1rem;
+        background: linear-gradient(90deg, #2c2c54 60%, #4e54c8 100%);
+        color: #fff;
+        border: none;
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .profile-edit-btn:hover {
+        background: linear-gradient(90deg, #4e54c8 60%, #2c2c54 100%);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(44,44,84,0.10);
+    }
+    .profile-info-label {
+        font-weight: 600;
+        color: #2c2c54;
+        font-size: 1rem;
+        margin-bottom: 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .profile-info-icon {
+        color: #4e54c8;
+        font-size: 1.1rem;
+        min-width: 1.3rem;
+        text-align: center;
+    }
+    .profile-info-value {
+        background: #f7f8fa;
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        font-size: 1.05rem;
+        margin-bottom: 1.1rem;
+        box-shadow: 0 1px 4px rgba(44,44,84,0.04);
+        color: #333;
+    }
+    @media (max-width: 600px) {
+        .profile-header { padding: 1.5rem 0.5rem 1rem 0.5rem; }
+        .profile-avatar { width: 90px; height: 90px; margin-top: -45px; }
+    }
+</style>
+<div class="container py-3" style="max-width: 900px;">
+    <!-- Profile Header -->
+    <div class="profile-header mb-0">
+        <div class="d-flex flex-column align-items-center justify-content-center">
+            <img id="profilePicPreviewHeader"
+                 src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default-profile.png') }}"
+                 alt="Profile Picture" class="profile-avatar mb-2">
+            <h3 class="fw-bold mb-1" style="font-family: 'Lora', serif;">{{ $user->first_name ?? 'First Name Not Set' }} {{ $user->middle_name ?? '' }} {{ $user->last_name ?? 'Last Name Not Set' }}</h3>
+            <div class="text-light small mb-2">{{ $user->email }}</div>
+        </div>
+    </div>
 
     <!-- Success Message -->
     @if(session('success'))
-        <div class="alert alert-success fade show mx-auto" style="max-width: 950px; margin-bottom: 2.5rem;">
+        <div class="alert alert-success fade show mx-auto" style="max-width: 950px; margin-bottom: 2.5rem; margin-top: 1.5rem;">
             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
         </div>
     @endif
@@ -28,7 +100,7 @@
     @endif
 
     <!-- Form Card -->
-    <div class="card mx-auto" style="max-width: 800px; border-radius: 14px;">
+    <div class="card mx-auto" style="max-width: 800px; border-radius: 0 0 18px 18px;">
         <div class="card-body p-6 p-md-7">
             <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 @csrf
@@ -41,8 +113,8 @@
                         <img id="profilePicPreview"
                              src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default-profile.png') }}"
                              alt="Profile Picture"
-                             class="border rounded-circle shadow"
-                             style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #2c2c54;">
+                             class="border rounded-circle shadow profile-avatar"
+                             style="object-fit: cover;">
                     </div>
                     <input type="file" name="profile_picture" id="profile_picture" class="d-none @error('profile_picture') is-invalid @enderror" onchange="previewProfilePic(event)">
                     <label for="profile_picture" class="btn btn-primary px-4 py-2" style="border-radius: 8px;">Upload New Picture</label>
@@ -53,7 +125,7 @@
 
                 <!-- First Name -->
                 <div class="mb-4">
-                    <label for="first_name" class="form-label">First Name <span class="text-muted">(Required)</span></label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-user"></i></span>First Name <span class="text-muted">(Required)</span></div>
                     <input type="text" id="first_name" name="first_name" class="form-control @error('first_name') is-invalid @enderror"
                         value="{{ old('first_name', $user->first_name) }}" required pattern="[A-Za-z\s]+">
                     @error('first_name') 
@@ -63,7 +135,7 @@
 
                 <!-- Middle Name -->
                 <div class="mb-4">
-                    <label for="middle_name" class="form-label">Middle Name</label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-user"></i></span>Middle Name</div>
                     <input type="text" id="middle_name" name="middle_name" class="form-control @error('middle_name') is-invalid @enderror"
                         value="{{ old('middle_name', $user->middle_name) }}">
                     @error('middle_name') 
@@ -73,7 +145,7 @@
 
                 <!-- Last Name -->
                 <div class="mb-4">
-                    <label for="last_name" class="form-label">Last Name <span class="text-muted">(Required)</span></label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-user"></i></span>Last Name <span class="text-muted">(Required)</span></div>
                     <input type="text" id="last_name" name="last_name" class="form-control @error('last_name') is-invalid @enderror"
                         value="{{ old('last_name', $user->last_name) }}" required pattern="[A-Za-z\s]+">
                     @error('last_name') 
@@ -83,7 +155,7 @@
 
                 <!-- Email Address -->
                 <div class="mb-4">
-                    <label for="email" class="form-label">Email Address <span class="text-muted">(Required)</span></label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-envelope"></i></span>Email Address <span class="text-muted">(Required)</span></div>
                     <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror"
                         value="{{ old('email', $user->email) }}" required>
                     @error('email') 
@@ -93,7 +165,7 @@
 
                 <!-- Mobile Number -->
                 <div class="mb-4">
-                    <label for="contact_number" class="form-label">Mobile Number <span class="text-muted">(Required)</span></label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-mobile-alt"></i></span>Mobile Number <span class="text-muted">(Required)</span></div>
                     <input type="text" id="contact_number" name="contact_number" class="form-control @error('contact_number') is-invalid @enderror"
                         value="{{ old('contact_number', $user->contact_number) }}" required>
                     @error('contact_number') 
@@ -103,7 +175,7 @@
 
                 <!-- Gender -->
                 <div class="mb-4">
-                    <label class="form-label">Gender <span class="text-muted">(Required)</span></label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-venus-mars"></i></span>Gender <span class="text-muted">(Required)</span></div>
                     <div class="d-flex flex-column gap-2">
                         @foreach(['Male', 'Female', 'NonBinary', 'Custom'] as $genderOption)
                             <div class="form-check">
@@ -123,7 +195,7 @@
 
                 <!-- Password Fields -->
                 <div class="mb-4">
-                    <label for="current_password" class="form-label">Current Password <span class="text-muted">(Required to change password)</span></label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-lock"></i></span>Current Password <span class="text-muted">(Required to change password)</span></div>
                     <input type="password" id="current_password" name="current_password" class="form-control @error('current_password') is-invalid @enderror"
                         placeholder="Enter current password">
                     @error('current_password') 
@@ -132,7 +204,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="new_password" class="form-label">New Password <span class="text-muted">(Optional)</span></label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-lock"></i></span>New Password <span class="text-muted">(Optional)</span></div>
                     <input type="password" id="new_password" name="new_password" class="form-control @error('new_password') is-invalid @enderror"
                         placeholder="Enter new password">
                     @error('new_password') 
@@ -142,7 +214,7 @@
                 </div>
 
                 <div class="mb-5">
-                    <label for="new_password_confirmation" class="form-label">Confirm New Password</label>
+                    <div class="profile-info-label"><span class="profile-info-icon"><i class="fas fa-lock"></i></span>Confirm New Password</div>
                     <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="form-control"
                         placeholder="Confirm new password">
                 </div>
@@ -213,6 +285,7 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('profilePicPreview').src = e.target.result;
+            document.getElementById('profilePicPreviewHeader').src = e.target.result;
         };
         reader.readAsDataURL(event.target.files[0]);
     }
