@@ -41,13 +41,14 @@
                                 <tr>
                                     <th class="ps-4 py-3 text-start fw-medium small text-uppercase" style="width: 5%;">ID</th>
                                     <th class="py-3 text-center fw-medium small text-uppercase" style="width: 8%;">Photo</th>
-                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 20%;">Employee</th>
+                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 18%;">Employee</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 18%;">Email</th>
                                     <th class="py-3 text-center fw-medium small text-uppercase" style="width: 12%;">Birthday</th>
-                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 12%;">Phone</th>
-                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 20%;">Address</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 10%;">Phone</th>
+                                    <th class="py-3 text-start fw-medium small text-uppercase" style="width: 15%;">Address</th>
                                     <th class="py-3 text-center fw-medium small text-uppercase" style="width: 8%;">Gender</th>
-                                    <th class="pe-4 py-3 text-end fw-medium small text-uppercase" style="width: 10%;">Salary</th>
-                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 13%;">Actions</th>
+                                    <th class="pe-4 py-3 text-end fw-medium small text-uppercase" style="width: 8%;">Salary</th>
+                                    <th class="py-3 text-center fw-medium small text-uppercase" style="width: 8%;">Actions</th>
                                 </tr>
                             </thead>
                             {{-- Table Body --}}
@@ -63,14 +64,20 @@
                                             <img src="{{ $employee->profile_picture ? asset('storage/' . $employee->profile_picture) : asset('images/default-avatar.png') }}" alt="Profile Picture" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #eee;">
                                         </td>
                                         {{-- Full Name --}}
-                                        <td class="py-3 text-start">
-                                            <span class="fw-medium">
+                                        <td class="py-3 text-start px-2">
+                                            <a href="{{ route('employee.profile', $employee->id) }}" class="fw-medium small text-decoration-none text-dark hover-underline">
                                                 {{ implode(' ', array_filter([$employee->first_name, $employee->middle_name, $employee->last_name, $employee->suffix])) }}
-                                            </span>
+                                            </a>
+                                        </td>
+                                        
+
+                                        {{-- Email --}}
+                                        <td class="py-3 text-center small text-muted px-2">
+                                            {{ $employee->user->email ?? 'N/A' }}
                                         </td>
 
                                         {{-- Birthday --}}
-                                        <td class="py-3 text-center small text-muted">
+                                        <td class="py-3 text-center small text-muted px-2">
                                             {{ \Carbon\Carbon::parse($employee->birthday)->format('d M Y') }}
                                         </td>
 

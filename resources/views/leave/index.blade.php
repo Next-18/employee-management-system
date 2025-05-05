@@ -26,7 +26,15 @@
                         @foreach($leaves as $leave)
                         <tr>
                             <td>{{ $leave->id }}</td>
-                            <td>{{ $leave->employee->FirstName }} {{ $leave->employee->LastName }}</td>
+                            <<td>
+                                {{ implode(' ', array_filter([
+                                    $leave->employee->first_name ?? '',
+                                    $leave->employee->middle_name ?? '',
+                                    $leave->employee->last_name ?? '',
+                                    $leave->employee->suffix ?? ''
+                                ])) }}
+                            </td>
+                            
                             <td>{{ $leave->leave_type }}</td>
                             <td>{{ $leave->start_date }}</td>
                             <td>{{ $leave->end_date }}</td>

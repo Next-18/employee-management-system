@@ -54,7 +54,7 @@ class LeaveController extends Controller
             'reason' => $request->reason,
             'status' => 'Pending',
         ]);
-        return redirect()->route('leave.index')->with('message', 'Leave request submitted successfully!');
+        return redirect()->route('leave.create')->with('message', 'Leave request submitted successfully!');
     }
 
     /**

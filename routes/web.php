@@ -39,6 +39,8 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/update/{id}', [EmployeeController::class, 'update'])->name('employee.update'); // Update Employee
             Route::delete('/delete/{id}', [EmployeeController::class, 'destroy'])->name('employee.delete'); // Delete Employee
             Route::post('/restore/{id}', [EmployeeController::class, 'restore'])->name('employee.restore'); // Restore Employee
+            Route::get('/employee/{id}/profile', [App\Http\Controllers\EmployeeController::class, 'show'])->name('employee.profile');
+
         });
         // Attendance Management Routes (admin can see all)
         Route::resource('attendance', App\Http\Controllers\AttendanceController::class);
@@ -55,6 +57,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('leave', [App\Http\Controllers\LeaveController::class, 'store'])->name('leave.store');
     });
 
-    // Allow both admin and employee to mark attendance
+    
     Route::post('attendance', [App\Http\Controllers\AttendanceController::class, 'store'])->name('attendance.store')->middleware('auth');
 });
