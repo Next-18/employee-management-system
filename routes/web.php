@@ -40,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/delete/{id}', [EmployeeController::class, 'destroy'])->name('employee.delete'); // Delete Employee
             Route::post('/restore/{id}', [EmployeeController::class, 'restore'])->name('employee.restore'); // Restore Employee
             Route::get('/employee/{id}/profile', [App\Http\Controllers\EmployeeController::class, 'show'])->name('employee.profile');
+            Route::get('/admin/employees/{id}/edit', [EmployeeController::class, 'edit'])->name('admin.employees.edit');
+
 
         });
         // Attendance Management Routes (admin can see all)

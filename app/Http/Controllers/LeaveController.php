@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Leave;
 use App\Models\Employee;
+use Carbon\Carbon;
 
 class LeaveController extends Controller
 {
@@ -20,8 +21,11 @@ class LeaveController extends Controller
                 ->orderBy('start_date', 'desc')
                 ->paginate(15);
         } else {
-            $leaves = Leave::with('employee')->orderBy('start_date', 'desc')->paginate(15);
+            $leaves = Leave::with('employee')
+                ->orderBy('start_date', 'desc')
+                ->paginate(15);
         }
+
         return view('leave.index', compact('leaves'));
     }
 
@@ -46,6 +50,7 @@ class LeaveController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'nullable|string',
         ]);
+
         Leave::create([
             'employee_id' => $request->employee_id,
             'leave_type' => $request->leave_type,
@@ -54,23 +59,8 @@ class LeaveController extends Controller
             'reason' => $request->reason,
             'status' => 'Pending',
         ]);
+
         return redirect()->route('leave.create')->with('message', 'Leave request submitted successfully!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**
@@ -79,12 +69,37 @@ class LeaveController extends Controller
     public function update(Request $request, $id)
     {
         $leave = Leave::findOrFail($id);
+
         $request->validate([
             'status' => 'required|in:Approved,Rejected',
         ]);
-        $leave->status = $request->status;
+
+        $newStatus = $request->status;
+        $originalStatus = $leave->status;
+
+        $employee = $leave->employee;
+
+        $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
+
+        // Handle approval
+        if ($originalStatus === 'Pending' && $newStatus === 'Approved') {
+            if ($employee->leave_balance < $daysRequested) {
+                return redirect()->back()->with('message', 'Employee does not have enough leave balance.');
+            }
+            $employee->leave_balance -= $daysRequested;
+            $employee->save();
+        }
+
+        // Handle rejection of previously approved leave (restore balance)
+        if ($originalStatus === 'Approved' && $newStatus === 'Rejected') {
+            $employee->leave_balance += $daysRequested;
+            $employee->save();
+        }
+
+        $leave->status = $newStatus;
         $leave->save();
-        return redirect()->back()->with('message', 'Leave status updated!');
+
+        return redirect()->back()->with('message', "Leave has been {$newStatus}.");
     }
 
     /**

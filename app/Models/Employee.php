@@ -23,6 +23,7 @@ class Employee extends Model
         'gender',
         'salary',
         'profile_picture',
+        'leave_balance',
     ];
 
     public function user()

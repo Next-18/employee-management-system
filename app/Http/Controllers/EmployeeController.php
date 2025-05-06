@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Mail\EmployeeCredentialsMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -75,19 +73,20 @@ class EmployeeController extends Controller
 
     public function master()
     {
-        $employees = Employee::withTrashed()->orderBy('last_name', 'asc')->get();
+        $employees = Employee::with('user')->withTrashed()->orderBy('last_name', 'asc')->get();
         return view('employee.master', compact('employees'));
     }
 
     public function edit($id)
     {
-        $employee = Employee::withTrashed()->findOrFail($id);
+        $employee = Employee::with(['user'])->withTrashed()->findOrFail($id);
         return view('employee.edit', compact('employee'));
     }
 
     public function update(Request $request, $id)
     {
         $employee = Employee::findOrFail($id);
+        $user = User::where('employee_id', $employee->id)->firstOrFail();
 
         $validated = $request->validate([
             'first_name' => ['required', 'min:1', 'max:255'],
@@ -95,26 +94,43 @@ class EmployeeController extends Controller
             'last_name' => ['required', 'min:1', 'max:255'],
             'suffix' => ['nullable', 'max:50'],
             'birthday' => ['required', 'date'],
-            'phone_number' => ['required', 'unique:employees,phone_number,' . $id],
+            'phone_number' => ['required', 'unique:employees,phone_number,' . $employee->id],
             'address' => ['required', 'min:1', 'max:500'],
             'gender' => ['required', 'in:male,female,other'],
             'salary' => ['required', 'numeric', 'min:0'],
-            'email' => 'required|email',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'email' => ['required', 'email', 'unique:users,email,' . $user->id],
+            'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:5120'],
         ]);
 
         if ($request->hasFile('profile_picture')) {
             if ($employee->profile_picture) {
                 Storage::disk('public')->delete($employee->profile_picture);
             }
-            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $validated['profile_picture'] = $path;
+            $validated['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
         }
 
-        $employee->update($validated);
+        $employee->update([
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'last_name' => $validated['last_name'],
+            'suffix' => $validated['suffix'] ?? null,
+            'birthday' => $validated['birthday'],
+            'phone_number' => $validated['phone_number'],
+            'address' => $validated['address'],
+            'gender' => $validated['gender'],
+            'salary' => $validated['salary'],
+            'profile_picture' => $validated['profile_picture'] ?? $employee->profile_picture,
+        ]);
 
-        return redirect()->route('employee.master')
-            ->with('message', 'Employee updated successfully!');
+        $user->update([
+            'email' => $validated['email'],
+            'name' => trim($validated['first_name'] . ' ' . ($validated['middle_name'] ?? '') . ' ' . $validated['last_name']),
+            'first_name' => $validated['first_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'last_name' => $validated['last_name'],
+        ]);
+
+        return redirect()->route('employee.master')->with('message', 'Employee updated successfully!');
     }
 
     public function destroy($id)
@@ -142,7 +158,7 @@ class EmployeeController extends Controller
     {
         $query = $request->input('query');
 
-        if(empty($query)) {
+        if (empty($query)) {
             return response()->json([]);
         }
 
