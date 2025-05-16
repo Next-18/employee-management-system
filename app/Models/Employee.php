@@ -10,7 +10,7 @@ class Employee extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'employees'; // Table name
+    protected $table = 'employees';
 
     protected $fillable = [
         'first_name',
@@ -26,8 +26,15 @@ class Employee extends Model
         'leave_balance',
     ];
 
+    // Link to User
     public function user()
     {
         return $this->hasOne(User::class, 'employee_id');
+    }
+
+    // ✅ Link to Attendances (required for attendance summary)
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
     }
 }

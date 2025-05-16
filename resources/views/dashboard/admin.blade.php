@@ -1,5 +1,5 @@
-@extends('layouts.main')  
-@section('content') 
+@extends('layouts.main')
+@section('content')
 <style>
     body {
         background: linear-gradient(135deg, #f7f8fa 0%, #e3e9f0 100%);
@@ -106,37 +106,17 @@
 </style>
 
 <div class="container my-5 px-3 px-md-4">
-    <!-- Modern Header -->
-    <div class="dashboard-header bg-primary text-white p-3 rounded d-flex justify-content-between align-items-center">
+    <div class="dashboard-header">
         <div class="d-flex align-items-center">
-            <i class="bi bi-speedometer2 me-3 fs-2"></i>
-            <h2 class="fw-semibold mb-0">Admin Dashboard</h2>
+            <i class="bi bi-speedometer2"></i>
+            <h2>Admin Dashboard</h2>
         </div>
-        <span class="badge rounded-pill fs-6 text-white px-3 py-2" style="background: linear-gradient(to right, #007bff, #0056b3);">
-            Admin Panel
-        </span>
-    </div>
-    
-
-    <!-- Welcome Card -->
-    <div class="card border-0 shadow-lg rounded-4 bg-white mb-4" style="background: rgba(255,255,255,0.85);">
-        <div class="card-body d-flex align-items-center p-4">
-            <div class="flex-shrink-0 me-4">
-                <i class="bi bi-person-circle fs-1 text-primary"></i>
-            </div>
-            <div>
-                <h5 class="fw-bold mb-2">Welcome back, Admin!</h5>
-                <p class="text-muted mb-0">
-                    Manage employees, track attendance, and review leave requests with ease using your modern control center.
-                </p>
-            </div>
-        </div>
+        <span class="badge bg-gradient">Admin Panel</span>
     </div>
 
-    <!-- Stats Section -->
     <div class="row mb-4 g-3">
         <div class="col-md-4">
-            <div class="card dashboard-card shadow-lg border-0 text-center py-3">
+            <div class="card dashboard-card text-center py-3">
                 <div class="dashboard-icon text-primary">
                     <i class="fas fa-users"></i>
                 </div>
@@ -145,7 +125,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card dashboard-card shadow-lg border-0 text-center py-3">
+            <div class="card dashboard-card text-center py-3">
                 <div class="dashboard-icon text-success">
                     <i class="fas fa-calendar-check"></i>
                 </div>
@@ -154,78 +134,12 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card dashboard-card shadow-lg border-0 text-center py-3">
+            <div class="card dashboard-card text-center py-3">
                 <div class="dashboard-icon text-warning">
                     <i class="fas fa-clipboard-list"></i>
                 </div>
                 <div class="dashboard-section-title">Total Leave Requests</div>
                 <div class="display-5 fw-bold text-warning">{{ $leaveCount }}</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Records Section -->
-    <div class="row g-3">
-        <!-- Recent Employees -->
-        <div class="col-lg-4">
-            <div class="card dashboard-card h-100 shadow-lg border-0">
-                <div class="card-header bg-primary text-white fw-semibold">
-                    <i class="fas fa-user-plus me-1"></i> Recent Employees
-                </div>
-                <div class="card-body p-2">
-                    <ul class="list-group list-group-flush">
-                        @forelse($recentEmployees as $emp)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-user-circle text-primary me-2"></i>{{ $emp->first_name }} {{ $emp->last_name }}</span>
-                                <span class="badge bg-light text-dark">{{ $emp->created_at->format('M d, Y') }}</span>
-                            </li>
-                        @empty
-                            <li class="list-group-item">No recent employees.</li>
-                        @endforelse
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Attendance -->
-        <div class="col-lg-4">
-            <div class="card dashboard-card h-100 shadow-lg border-0">
-                <div class="card-header bg-success text-white fw-semibold">
-                    <i class="fas fa-calendar-day me-1"></i> Recent Attendance
-                </div>
-                <div class="card-body p-2">
-                    <ul class="list-group list-group-flush">
-                        @forelse($recentAttendance as $att)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-user-check text-success me-2"></i>{{ $att->employee?->first_name ?? 'N/A' }} {{ $att->employee?->last_name ?? '' }}</span>
-                                <span class="badge bg-light text-dark">{{ $att->date }}</span>
-                            </li>
-                        @empty
-                            <li class="list-group-item">No recent attendance records.</li>
-                        @endforelse
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Leave Requests -->
-        <div class="col-lg-4">
-            <div class="card dashboard-card h-100 shadow-lg border-0">
-                <div class="card-header bg-warning text-white fw-semibold">
-                    <i class="fas fa-plane-departure me-1"></i> Recent Leave Requests
-                </div>
-                <div class="card-body p-2">
-                    <ul class="list-group list-group-flush">
-                        @forelse($recentLeaves as $leave)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-user-clock text-warning me-2"></i>{{ $leave->employee?->first_name ?? 'N/A' }} {{ $leave->employee?->last_name ?? '' }}</span>
-                                <span class="badge bg-light text-dark">{{ $leave->start_date }} - {{ $leave->end_date }}</span>
-                            </li>
-                        @empty
-                            <li class="list-group-item">No recent leave requests.</li>
-                        @endforelse
-                    </ul>
-                </div>
             </div>
         </div>
     </div>

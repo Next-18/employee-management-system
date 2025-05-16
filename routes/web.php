@@ -5,7 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\AttendanceController;
 // Public Routes
 Route::get('/', function () {
     return view('welcome');
@@ -46,6 +46,14 @@ Route::middleware(['auth'])->group(function () {
         });
         // Attendance Management Routes (admin can see all)
         Route::resource('attendance', App\Http\Controllers\AttendanceController::class);
+        Route::get('/attendance/summary', [AttendanceController::class, 'summary'])->name('attendance.summary');
+        Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('attendance.')->group(function () {
+            Route::get('/attendance', [AttendanceController::class, 'index'])->name('index');
+            Route::get('/attendance/summary', [AttendanceController::class, 'summary'])->name('summary');
+            Route::get('/attendance/pending', [AttendanceController::class, 'pending'])->name('pending');
+        });
+        
+
         // Leave Management Routes (admin can see all)
         Route::resource('leave', App\Http\Controllers\LeaveController::class);
     });
